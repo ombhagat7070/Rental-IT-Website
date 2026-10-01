@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login & Security - RentIT</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: #f8f9fa; }
+    header { background-color: #222; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { margin: 0; cursor: pointer; }
+    .security-section { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+    .security-card { background: white; padding: 25px; border-radius: 10px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .security-card h3 { margin: 0 0 20px; border-bottom: 2px solid #ff6600; padding-bottom: 8px; }
+    .form-group { margin-bottom: 15px; }
+    input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+    .btn { background: #ff6600; color: white; padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+    .btn:hover { background: #e65c00; }
+    .btn-danger { background: #dc3545; }
+    .button-group { display: flex; gap: 15px; margin-top: 10px; }
+    .success, .error { padding: 10px; border-radius: 6px; margin-bottom: 15px; display:none; }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1 onclick="window.location.href='index.html'">RentIT</h1>
+</header>
+
+<section class="security-section">
+
+  <div class="success" id="successMessage"></div>
+  <div class="error" id="errorMessage"></div>
+
+  <!-- Personal Information -->
+  <div class="security-card">
+    <h3><i class="fa-solid fa-user"></i> Personal Information</h3>
+
+    <div class="form-group">
+      <label>First Name</label>
+      <input id="firstName">
+    </div>
+
+    <div class="form-group">
+      <label>Last Name</label>
+      <input id="lastName">
+    </div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input id="email">
+    </div>
+
+    <div class="form-group">
+      <label>Phone</label>
+      <input id="phone">
+    </div>
+
+    <button class="btn" onclick="updateUser()">Update Information</button>
+  </div>
+
+  <!-- Change Password -->
+  <div class="security-card">
+    <h3><i class="fa-solid fa-lock"></i> Change Password</h3>
+
+    <div class="form-group">
+      <label>Current Password</label>
+      <input type="password" id="currentPassword">
+    </div>
+
+    <div class="form-group">
+      <label>New Password</label>
+      <input type="password" id="newPassword">
+    </div>
+
+    <div class="form-group">
+      <label>Confirm Password</label>
+      <input type="password" id="confirmPassword">
+    </div>
+
+    <button class="btn" onclick="changePassword()">Change Password</button>
+  </div>
+
+  <!-- Logout -->
+  <div class="security-card">
+    <h3><i class="fa-solid fa-cog"></i> Account Actions</h3>
+    <button class="btn btn-danger" onclick="logout()">Logout</button>
+  </div>
+
+</section>
+
+<script>
+  const API = "http://localhost:3001";
+
+  function showMessage(msg, type) {
+    document.getElementById("successMessage").style.display = type === "success" ? "block" : "none";
+    document.getElementById("errorMessage").style.display = type === "error" ? "block" : "none";
+
+    if (type === "success") document.getElementById("successMessage").textContent = msg;
+    else document.getElementById("errorMessage").textContent = msg;
+
+    setTimeout(() => {
+      document.getElementById("successMessage").style.display = "none";
+      document.getElementById("errorMessage").style.display = "none";
+    }, 3000);
+  }
+
+  const currentUser = JSON.parse(localStorage.getItem("rentitCurrentUser"));
+
+  document.getElementById("firstName").value = currentUser.name.split(" ")[0];
+  document.getElementById("lastName").value = currentUser.name.split(" ")[1] || "";
+  document.getElementById("email").value = currentUser.email;
+  document.getElementById("phone").value = currentUser.phone;
+
+  async function updateUser() {
+    const body = {
+      user_id: currentUser.user_id,
+      firstName: document.getElementById("firstName").value,
+      lastName: document.getElementById("lastName").value,
+      email: document.getElementById("email").value,
+      phone: document.getElementById("phone").value
+    };
+
+    const res = await fetch(API + "/updateUser", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const data = await res.json();
+
+    if (res.ok) showMessage("User updated successfully!", "success");
+    else showMessage(data.message, "error");
+  }
+
+  async function changePassword() {
+    const body = {
+      user_id: currentUser.user_id,
+      currentPassword: document.getElementById("currentPassword").value,
+      newPassword: document.getElementById("newPassword").value
+    };
+
+    if (document.getElementById("newPassword").value !== document.getElementById("confirmPassword").value)
+      return showMessage("Passwords do not match!", "error");
+
+    const res = await fetch(API + "/changePassword", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const data = await res.json();
+
+    if (res.ok) showMessage("Password changed!", "success");
+    else showMessage(data.message, "error");
+  }
+
+  function logout() {
+    localStorage.clear();
+    window.location.href = "login.html";
+  }
+</script>
+
+</body>
+</html>

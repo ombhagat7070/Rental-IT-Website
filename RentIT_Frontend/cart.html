@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Your Cart - RentIT</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #f8f9fa;
+    }
+    header, footer {
+      background-color: #222;
+      color: white;
+      padding: 15px 20px;
+      text-align: center;
+    }
+    .container {
+      padding: 30px;
+      max-width: 1000px;
+      margin: auto;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .cart-item {
+      display: flex;
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      align-items: center;
+      justify-content: space-between;
+    }
+    .cart-item img {
+      width: 120px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .cart-details {
+      flex: 1;
+      padding: 0 20px;
+    }
+    .cart-details h4 {
+      margin: 0;
+    }
+    .cart-details p {
+      margin: 5px 0;
+      color: #555;
+    }
+    .cart-actions button {
+      background: #ff6600;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .cart-actions button:hover {
+      background: #e65c00;
+    }
+    .total-box {
+      margin-top: 30px;
+      text-align: right;
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+    .checkout-btn {
+      text-align: right;
+      margin-top: 20px;
+    }
+    .checkout-btn button {
+      background: #ff6600;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .checkout-btn button:hover {
+      background: #e65c00;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>RentIT - Your Cart</h1>
+</header>
+
+<div class="container">
+  <h2>Your Rental Cart</h2>
+
+  <div id="cartItems"></div>
+
+  <div class="total-box" id="totalPrice"></div>
+
+  <div class="checkout-btn">
+    <button onclick="proceedToPayment()">Proceed to Payment</button>
+  </div>
+</div>
+
+<footer>
+  <p>&copy; 2025 RentIT. All rights reserved.</p>
+</footer>
+
+<script>
+function loadCart() {
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const cartContainer = document.getElementById("cartItems");
+  const totalPriceElement = document.getElementById("totalPrice");
+
+  if (cart.length === 0) {
+    cartContainer.innerHTML = "<p style='text-align:center;color:#555;'>Your cart is empty.</p>";
+    totalPriceElement.textContent = "";
+    return;
+  }
+
+  let totalRent = 0;
+  let totalDeposit = 0;
+
+  cartContainer.innerHTML = "";
+
+  cart.forEach((item, index) => {
+    const days = item.days || 1;
+    const rentUnit = item.rentUnit || "day";
+    const deposit = parseFloat(item.deposit) || 0;
+
+    const subtotal = item.price * days;
+    totalRent += subtotal;
+    totalDeposit += deposit;
+
+    cartContainer.innerHTML += `
+      <div class="cart-item">
+        <img src="http://localhost:3001/uploads/${item.image}" alt="${item.name}">
+        <div class="cart-details">
+          <h4>${item.name}</h4>
+          <p>Price: ₹${item.price} / ${rentUnit}</p>
+          <p>Duration: ${days} ${rentUnit}(s)</p>
+          <p>Subtotal Rent: <strong>₹${subtotal}</strong></p>
+          <p>Deposit: <strong>₹${deposit}</strong></p>
+        </div>
+        <div class="cart-actions">
+          <button onclick="removeItem(${index})">Remove</button>
+        </div>
+      </div>
+    `;
+  });
+
+  const grandTotal = totalRent + totalDeposit;
+  localStorage.setItem("totalAmount", grandTotal); // ✅ THIS WILL BE USED IN payment.html
+
+  totalPriceElement.textContent = `Total Rent: ₹${totalRent}  +  Deposit: ₹${totalDeposit}  =  Grand Total: ₹${grandTotal}`;
+}
+
+function removeItem(index) {
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  cart.splice(index, 1);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  loadCart();
+}
+
+function proceedToPayment() {
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  if (cart.length === 0) return alert("Your cart is empty!");
+
+  window.location.href = "payment.html";
+}
+
+loadCart();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Electronics - RentIT</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: #f8f9fa; }
+
+  header { background-color: #222; color: white; padding: 10px 20px; display: flex; align-items: center; gap: 15px; position: sticky; top: 0; z-index: 1000; }
+  header h1 { margin: 0; font-size: 1.8rem; font-weight: bold; cursor: pointer; }
+
+  /* Back Button */
+  .back-btn {
+    background: #fff;
+    color: #222;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.3s;
+  }
+  .back-btn:hover {
+    background: #ddd;
+  }
+
+  /* Hero Section */
+  .hero { 
+    text-align: center; 
+    padding: 100px 20px; 
+    background: url('https://wallpaperaccess.com/full/1429270.jpg') no-repeat center center/cover; 
+    color: white; position: relative; 
+  }
+  .hero::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1; }
+  .hero h2, .hero p { position: relative; z-index: 2; }
+  .hero h2 { font-size: 2.5rem; margin-bottom: 15px; }
+  .hero p { font-size: 1.2rem; margin-bottom: 20px; }
+
+  .products-section { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+  .products-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+  .products-info { font-size: 1rem; color: #666; }
+  .sort-controls { display: flex; align-items: center; gap: 10px; }
+
+  .sort-select { padding: 8px 12px; border: 1px solid #ddd; border-radius: 5px; background: white; }
+
+  .products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+
+  .product-card { background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; transition: 0.3s; text-align: center; padding-bottom: 10px; }
+  .product-card:hover { transform: translateY(-5px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+  .product-card img { width: 100%; height: 180px; object-fit: cover; }
+  .product-card h3 { margin: 12px 12px 4px; font-size: 1.05rem; color: #333; min-height: 40px; }
+
+  .product-card p {
+    margin: 0 12px 8px;
+    color: #555;
+    font-size: 0.9rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; 
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .product-price { font-size: 1.2rem; font-weight: bold; color: #ff6600; margin: 8px 0; }
+
+  .product-card button { background: #ff6600; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+  .product-card button:hover { background: #e65c00; }
+
+  .no-products { text-align: center; padding: 40px; background: white; border-radius: 10px; }
+
+  footer { background: #222; color: white; padding: 20px; text-align: center; margin-top: 40px; }
+
+  .add-button { position: fixed; bottom: 30px; right: 30px; background: #ff6600; color: white; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; cursor: pointer; }
+  .add-button:hover { background: #e65c00; }
+</style>
+</head>
+<body>
+
+<header>
+  <button class="back-btn" onclick="history.back()">
+    <i class="fa-solid fa-arrow-left"></i> Back
+  </button>
+  <h1 onclick="window.location.href='index.html'">RentIT</h1>
+</header>
+
+<section class="hero">
+  <h2>Rent Electronic Gadgets</h2>
+  <p>Laptops, TVs, Consoles & More</p>
+</section>
+
+<section class="products-section">
+  <div class="products-controls">
+    <div class="products-info" id="productsInfo">Electronic Devices & Gadgets</div>
+    <div class="sort-controls">
+      <select class="sort-select" id="sortSelect" onchange="sortProducts()">
+        <option value="name-asc">Name (A-Z)</option>
+        <option value="name-desc">Name (Z-A)</option>
+        <option value="price-asc">Price (Low to High)</option>
+        <option value="price-desc">Price (High to Low)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="products-grid" id="productsGrid"></div>
+</section>
+
+<button class="add-button" onclick="window.location.href='owner_login.html'">
+  <i class="fa-solid fa-plus"></i>
+</button>
+
+<footer>
+  <p>&copy; 2025 RentIT. All rights reserved.</p>
+</footer>
+
+<script>
+let products = [];
+
+window.addEventListener('load', async() => { loadProducts(); });
+
+async function loadProducts() {
+  const res = await fetch('http://localhost:3001/products/category/electronic');
+  const data = await res.json();
+  products = data.products || [];
+  displayProducts(products);
+}
+
+function displayProducts(items) {
+  const grid = document.getElementById('productsGrid');
+  grid.innerHTML = items.map(p => `
+    <div class="product-card">
+      <img src="http://localhost:3001/uploads/${p.image}" alt="${p.name}">
+      <h3>${p.name}</h3>
+      <p>${p.description}</p>
+      <div class="product-price">₹${p.price}/${p.rentUnit || 'day'}</div>
+      <p><strong>Deposit:</strong> ₹${p.deposit || 0}</p>
+      <button onclick="window.location.href='product_details.html?id=${p.product_id}'">Rent Now</button>
+    </div>
+  `).join('');
+}
+</script>
+
+</body>
+</html>

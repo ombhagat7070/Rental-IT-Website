@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RentIT Provider Dashboard</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: url('https://images.rawpixel.com/image_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIzLTEyL3Jhd3BpeGVsX29mZmljZV8zOF9hYnN0cmFjdF9hcnRfb2Zfd2F2eV9saWdodF9saW5lc193aXRoX2FfZGFya18yYTNmMTUzMS04ODFjLTQxOTgtODM0YS1kYTc4MzQ3MDRmN2FfMi5qcGc.jpg') no-repeat center center/cover;
+      position: relative;
+      color: white;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.25);
+      z-index: -1;
+    }
+
+    header {
+      background-color: rgba(34, 34, 34, 0.85);
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    h1 { cursor: pointer; }
+
+    .dashboard {
+      padding: 80px 20px;
+      text-align: center;
+    }
+    .dashboard h2 {
+      font-size: 2.5rem;
+      margin-bottom: 40px;
+    }
+    .dashboard-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      max-width: 1000px;
+      margin: auto;
+    }
+    .action-card {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 30px 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+      transition: 0.3s;
+      cursor: pointer;
+    }
+    .action-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+    }
+    .action-card h3 { margin-bottom: 15px; font-size: 1.4rem; }
+    .action-card p { font-size: 0.95rem; margin-bottom: 20px; }
+    .action-card button {
+      background: #ff6600;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .action-card button:hover { background: #e65c00; }
+
+    footer {
+      background: rgba(34, 34, 34, 0.85);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1 onclick="window.location.href='index.html'">RentIT</h1>
+  <nav style="display: flex; gap: 20px; align-items: center; color: white;">
+    <span id="ownerGreeting">Hello, Owner</span>
+    <a href="#" onclick="logout()" style="color: orange; text-decoration:none;">Sign Out</a>
+  </nav>
+</header>
+
+<section class="dashboard">
+  <h2>Welcome to Your Dashboard</h2>
+
+  <div class="dashboard-actions">
+
+    <div class="action-card">
+      <h3>📦 List a Product</h3>
+      <p>Add a new product for renting</p>
+      <button onclick="window.location.href='list_product.html'">List Product</button>
+    </div>
+
+    <div class="action-card">
+      <h3>🛠 Manage Products</h3>
+      <p>View, edit, or remove your listings</p>
+      <button onclick="window.location.href='manage_prod.html'">Manage</button>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 RentIT. All rights reserved.</p>
+</footer>
+
+<script>
+  window.addEventListener('load', function() {
+    const currentOwner = JSON.parse(localStorage.getItem('rentitCurrentUser') || '{}');
+    if (currentOwner.firstName) {
+      document.getElementById('ownerGreeting').textContent = `Hello, ${currentOwner.firstName}`;
+    }
+  });
+
+  function logout() {
+    localStorage.removeItem('rentitLoggedIn');
+    localStorage.removeItem('rentitCurrentUser');
+    alert('You have been logged out.');
+    window.location.href = 'index.html';
+  }
+</script>
+
+</body>
+</html>

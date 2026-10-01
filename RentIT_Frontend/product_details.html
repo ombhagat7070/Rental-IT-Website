@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Details - RentIT</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: #f8f9fa; }
+    header { background: #222; color: #fff; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { margin: 0; cursor: pointer; }
+
+    .container { max-width: 1200px; margin: 30px auto; padding: 20px; display: flex; gap: 40px; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .product-image { flex: 1; }
+    .product-image img { width: 100%; border-radius: 10px; height: 350px; object-fit: cover; }
+
+    .product-details { flex: 1; }
+    .product-details h2 { margin-top: 0; color: #333; }
+    .price { font-size: 1.6rem; color: #ff6600; margin: 10px 0; }
+    .description { margin: 15px 0; color: #555; }
+    .category { font-size: 1rem; color: #333; margin-top: 5px; }
+    .deposit { margin-top: 8px; font-size: 1rem; color: #333; }
+
+    .rent-input { padding:8px;border-radius:5px;border:1px solid #ccc;width:150px;margin-top:10px; }
+
+    .rent-btn { background:#ff6600; color:white; border:none; padding:12px 25px; font-size:1.1rem; cursor:pointer; border-radius:6px; margin-top:20px; font-weight:bold; }
+    .rent-btn:hover { background:#e65c00; }
+
+    .back { display:block; margin:20px auto; text-align:center; font-size:1rem; color:#333; text-decoration:none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1 onclick="window.location.href='index.html'">RentIT</h1>
+</header>
+
+<div class="container" id="productContainer">Loading product details...</div>
+
+<a href="javascript:history.back()" class="back">← Go Back</a>
+
+<script>
+let product = null;
+
+async function loadProductDetails() {
+  const params = new URLSearchParams(window.location.search);
+  const productId = params.get('id');
+
+  if (!productId) {
+    document.getElementById('productContainer').innerHTML = "<h3>Invalid Product</h3>";
+    return;
+  }
+
+  const res = await fetch(`http://localhost:3001/products/${productId}`);
+  const data = await res.json();
+  product = data.product;
+
+  document.getElementById('productContainer').innerHTML = `
+    <div class="product-image">
+      <img src="http://localhost:3001/uploads/${product.image}" alt="${product.name}" onerror="this.src='image/dslr.jpg'">
+    </div>
+    <div class="product-details">
+      <h2>${product.name}</h2>
+
+      <div class="price">₹${product.price} / ${product.rentUnit}</div>
+
+      <div class="description">${product.description || "No description available."}</div>
+
+      <div class="category"><strong>Category:</strong> ${product.category}</div>
+
+      <div class="deposit"><strong>Refundable Deposit:</strong> ₹${product.deposit}</div>
+
+      <label style="margin-top:15px;display:block;font-weight:bold;">Enter Rental Duration (${product.rentUnit}):</label>
+      <input type="number" id="rentalDuration" min="1" value="1" class="rent-input">
+
+      <button class="rent-btn" id="rentButton">Add to Cart</button>
+    </div>
+  `;
+
+  document.getElementById("rentButton").addEventListener("click", addToCart);
+}
+
+function addToCart() {
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  const exists = cart.find(item => item.product_id === product.product_id);
+  if (exists) return alert("This product is already in your cart.");
+
+  let duration = parseInt(document.getElementById("rentalDuration").value);
+  if (!duration || duration < 1) duration = 1;
+
+  cart.push({
+    product_id: product.product_id,
+    owner_id: product.owner_id,
+    name: product.name,
+    category: product.category,
+    price: product.price,
+    rentUnit: product.rentUnit,
+    image: product.image,
+    deposit: product.deposit,
+    duration: duration
+  });
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+  alert("✅ Added to cart!");
+  window.location.href = "cart.html";
+}
+
+loadProductDetails();
+</script>
+
+</body>
+</html>

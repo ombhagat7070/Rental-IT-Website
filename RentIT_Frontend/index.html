@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RentIT - Rent Anything Online</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background-color: #f8f9fa;
+    }
+
+    header {
+      background-color: #222;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* Dropdown Menu (Left Side ☰) */
+    .dropdown {
+      position: relative;
+    }
+    .dropbtn {
+      background: #333;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 4px;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      top: 40px;
+      left: 0;
+      background: white;
+      color: #333;
+      width: 220px;
+      border-radius: 5px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+      z-index: 1001;
+      padding: 10px 0;
+    }
+    .dropdown-section {
+      border-bottom: 1px solid #eee;
+      padding: 8px 0;
+    }
+    .dropdown-section:last-child {
+      border-bottom: none;
+    }
+    .dropdown-section h4 {
+      margin: 5px 15px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: white;
+      background: #ff6600;
+      padding: 8px 12px;
+      border-radius: 5px;
+      text-align: center;
+    }
+    .dropdown-section a {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 15px;
+      color: #333;
+      font-size: 0.9rem;
+      text-decoration: none;
+    }
+    .dropdown-section a:hover {
+      background-color: #f0f0f0;
+    }
+
+    /* Account Dropdown (Right Side) */
+    .account-dropdown {
+      position: relative;
+      cursor: pointer;
+    }
+    .account-text {
+      font-size: 0.9rem;
+      color: #ddd;
+    }
+    .account-bold {
+      font-size: 1rem;
+      font-weight: bold;
+      color: white;
+    }
+    .account-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 40px;
+      background: white;
+      color: black;
+      width: 250px;
+      border-radius: 5px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+      padding: 15px;
+      z-index: 1001;
+    }
+    .account-menu button {
+      background: #ff6600;
+      color: white;
+      border: none;
+      padding: 10px;
+      width: 100%;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    .account-menu button:hover {
+      background: #e65c00;
+    }
+    .account-menu p {
+      font-size: 0.9rem;
+      margin: 10px 0;
+      text-align: center;
+    }
+    .account-menu p a {
+      color: #0066c0;
+      text-decoration: none;
+    }
+    .account-menu p a:hover {
+      text-decoration: underline;
+    }
+    .account-menu h4 {
+      margin-top: 15px;
+      font-size: 1rem;
+      border-top: 1px solid #eee;
+      padding-top: 10px;
+    }
+    .account-menu ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .account-menu ul li {
+      padding: 5px 0;
+    }
+    .account-menu ul li a {
+      text-decoration: none;
+      color: #333;
+      font-size: 0.9rem;
+    }
+    .account-menu ul li a:hover {
+      text-decoration: underline;
+    }
+    .account-dropdown:hover .account-menu {
+      display: block;
+    }
+
+    /* Cart Icon */
+    .cart {
+      display: flex;
+      align-items: center;
+      margin-left: 20px;
+    }
+    .cart a {
+      color: white;
+      text-decoration: none;
+      font-size: 1rem;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .cart-icon {
+      font-size: 1.5rem;
+    }
+    .cart-count {
+      position: absolute;
+      top: -8px;
+      left: 10px;
+      background: orange;
+      color: black;
+      font-size: 0.8rem;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 50%;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 100px 20px 60px 20px;
+      background: url('https://cdn.pixabay.com/photo/2020/10/21/18/07/laptop-5673901_1280.jpg') no-repeat center center/cover;
+      color: white;
+      position: relative;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1;
+    }
+    .hero h2,
+    .hero p,
+    .hero input,
+    .hero button,
+    .hero-link {
+      position: relative;
+      z-index: 2;
+    }
+    .hero h2 {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+    .hero-link {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      color: white;
+      padding: 0;
+      font-weight: bold;
+      text-decoration: underline;
+    }
+    .hero-link:hover {
+      color: #ff6600;
+    }
+
+    .hero-search-input {
+      padding: 12px 40px 12px 15px; /* extra right padding for icon */
+      width: 300px;
+      border-radius: 5px;
+      border: none;
+      font-size: 1rem;
+    }
+    .hero-search-button {
+      margin-left: 10px;
+      padding: 12px 20px;
+      border-radius: 5px;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      background: #ff6600;
+      color: white;
+      font-size: 1rem;
+    }
+    .hero-search-button:hover,
+    .hero-filter-icon:hover {
+      background: #e65c00;
+      color: white;
+    }
+
+    /* Search Results and Sort */
+    .search-results {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .search-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      background: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .search-info {
+      font-size: 1rem;
+      color: #666;
+    }
+    .sort-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sort-label {
+      font-weight: bold;
+      color: #333;
+    }
+    .sort-select {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background: white;
+      font-size: 0.9rem;
+    }
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .product-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      overflow: hidden;
+      transition: 0.3s;
+      text-align: center;
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .product-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+    .product-card h3 {
+      margin: 15px 0 5px;
+      color: #333;
+    }
+    .product-card p {
+      color: #555;
+      margin: 0 0 10px;
+    }
+    .product-price {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #ff6600;
+      margin: 10px 0;
+    }
+    .product-card button {
+      background: #ff6600;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .product-card button:hover {
+      background: #e65c00;
+    }
+    .no-results {
+      text-align: center;
+      padding: 40px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      color: #666;
+    }
+
+    /* Products */
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      padding: 40px;
+    }
+    .product-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      overflow: hidden;
+      transition: 0.3s;
+      text-align: center;
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .product-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+    .product-card h3 {
+      margin: 15px 0 5px;
+    }
+    .product-card p {
+      color: #555;
+      margin: 0 0 15px;
+    }
+    .product-card button {
+      background: #ff6600;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .product-card button:hover {
+      background: #e65c00;
+    }
+
+    /* Footer */
+    footer {
+      background: #222;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+     </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="dropdown">
+      <button class="dropbtn">☰</button>
+      <div class="dropdown-content" id="dropdownMenu">
+        <div class="dropdown-section">
+          <h4>Help & Settings</h4>
+          <a href="youraccount.html">Your Account</a>
+          <a href="contact.html">Customer Service</a>
+        </div>
+      </div>
+    </div>
+    <h1 onclick="window.scrollTo({top:0, behavior:'smooth'});">RentIT</h1>
+  </div>
+
+  <nav style="display: flex; align-items: center; gap: 20px;">
+    <div class="account-dropdown">
+      <span class="account-text" id="accountGreeting">Hello, Sign in</span><br>
+      <span class="account-bold">Account & Lists ▾</span>
+      <div class="account-menu">
+        <button id="loginButton" onclick="window.location.href='login.html'">Sign in</button>
+        <p>New customer? <a href="signup.html">Start here.</a></p>
+        <h4>Your Account</h4>
+        <ul>
+          <li><a href="youraccount.html">Your Account</a></li>
+          <li><a href="orders.html">Your Orders</a></li>
+          <li><a href="#" onclick="logout()">Sign Out</a></li>	  
+        </ul>
+      </div>
+    </div>
+
+    <div class="cart">
+      <a href="cart.html">
+        <span class="cart-icon">🛒</span>
+        <span class="cart-count">0</span>
+        <span class="cart-text">Cart</span>
+      </a>
+    </div>
+  </nav>
+</header>
+
+<!-- Hero Section -->
+<section class="hero">
+  <a href="owner_login.html" class="hero-link">Become Provider..</a>
+  <h2>Find Anything to Rent</h2>
+  <p>Mobiles, Appliances, Electronics & more at best prices</p>
+
+  <div class="hero-search-container">
+    <input type="text" placeholder="Search rentals..." class="hero-search-input" id="heroSearch">
+    <button class="hero-search-button" onclick="performSearch()">Search</button>
+  </div>
+</section>
+
+
+<!-- Products -->
+<section class="products">
+  <div class="product-card">
+    <img src="image/dslr.jpg" alt="Cameras">
+    <h3>Cameras</h3>
+    <p>Cameras, Lens and more</p>
+    <button onclick="window.location.href='cameras.html'">Explore</button>
+  </div>
+  <div class="product-card">
+    <img src="image/laptop.jpg" alt="Electronic Gadgets">
+    <h3>Electronic Gadgets</h3>
+    <p>TVs, Laptops, and more</p>
+    <button onclick="window.location.href='electro.html'">Explore</button>
+  </div>
+  <div class="product-card">
+    <img src="image/acces.jpg" alt="Accessories">
+    <h3>Accessories</h3>
+    <p>Tripods, Lights and more</p>
+    <button onclick="window.location.href='access.html'">Explore</button>
+  </div>
+</section>
+
+
+<!-- Footer -->
+<footer>
+  <p>&copy; 2025 RentIT. All rights reserved.</p>
+  <button onclick="window.location.href='admin_login.html'" class="admin-btn">Admin Login</button>
+</footer>
+
+<style>
+  footer {
+    background: #222;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+  }
+
+  .admin-btn {
+    background-color: #ff6600;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+
+  .admin-btn:hover {
+    background-color: #e65c00;
+  }
+</style>
+
+
+
+<script>
+  // Check login status on page load
+window.addEventListener('load', function() {
+  const loggedInUser = localStorage.getItem('rentitLoggedIn');
+  const currentUser = JSON.parse(localStorage.getItem('rentitCurrentUser') || '{}');
+  
+  if (loggedInUser && currentUser.firstName) {
+    document.getElementById('accountGreeting').textContent = `Hello, ${currentUser.firstName}`;
+    document.getElementById('loginButton').textContent = 'Account';
+    document.getElementById('loginButton').onclick = function() { window.location.href = 'youraccount.html'; };
+  }
+});
+
+  function logout() {
+    localStorage.removeItem('rentitLoggedIn');
+    localStorage.removeItem('rentitCurrentUser');
+    alert('You have been logged out.');
+    window.location.reload();
+  }
+
+  // Dropdown toggle
+  const dropbtn = document.querySelector('.dropbtn');
+  const dropdownMenu = document.getElementById('dropdownMenu');
+  dropbtn.addEventListener('click', () => {
+    dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+  });
+  window.addEventListener('click', function(e) {
+    if (!dropbtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+      dropdownMenu.style.display = 'none';
+    }
+  });
+
+  // Search functionality
+  function performSearch() {
+    const searchTerm = document.getElementById('heroSearch').value.trim();
+    
+    if (searchTerm === '') {
+      alert('Please enter a search term');
+      return;
+    }
+
+    // Redirect to search results page with search term as URL parameter
+    window.location.href = `search_results.html?q=${encodeURIComponent(searchTerm)}`;
+  }
+
+  // Allow search on Enter key
+  document.getElementById('heroSearch').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      performSearch();
+    }
+  });
+
+  // Update Cart Count in Header
+function updateCartCount() {
+  let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  document.querySelector(".cart-count").textContent = cart.length;
+}
+updateCartCount();
+
+
+ </script>
+
+</body>
+</html>

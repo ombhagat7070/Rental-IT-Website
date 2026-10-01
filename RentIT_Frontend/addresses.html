@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Address - RentIT</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: #f8f9fa; }
+    header { background-color: #222; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { margin: 0; cursor: pointer; }
+
+    .hero { text-align: center; padding: 40px 20px 20px; }
+    .hero h2 { margin-bottom: 10px; color: #222; }
+    .hero p { color: #555; }
+
+    .address-section { max-width: 900px; margin: 0 auto; padding: 20px; }
+    .address-controls { margin-bottom: 20px; }
+
+    .address-info { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); font-size: 16px; }
+
+    .address-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
+
+    .address-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: relative; }
+    .address-card h3 { margin-top: 0; color: #333; }
+    .address-card p { margin: 5px 0; color: #555; }
+
+    .address-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 10px; }
+    .address-actions i { cursor: pointer; color: #ff6600; }
+    .address-actions i:hover { color: #e65c00; }
+
+    .no-address { text-align: center; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .no-address button { background: #ff6600; color: white; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+    .no-address button:hover { background: #e65c00; }
+
+    .add-button { position: fixed; bottom: 30px; right: 30px; background: #ff6600; color: white; border: none; border-radius: 50%; width: 55px; height: 55px; font-size: 22px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+    .add-button:hover { background: #e65c00; }
+
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); justify-content: center; align-items: center; }
+    .modal-content { background: white; padding: 25px; border-radius: 10px; width: 90%; max-width: 400px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+    .modal-content h3 { margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid #ff6600; padding-bottom: 8px; }
+
+    input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 10px; font-size: 15px; }
+    button { background: #ff6600; color: white; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; }
+    button:hover { background: #e65c00; }
+
+    footer { text-align: center; padding: 20px; background: #222; color: white; margin-top: 40px; }
+
+    /* Optional success/error message boxes like Login & Security */
+    .success, .error { padding: 10px; border-radius: 6px; margin-bottom: 15px; display:none; }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1 onclick="window.location.href='index.html'">RentIT</h1>
+</header>
+
+<section class="hero">
+  <h2>Your Address</h2>
+  <p>Manage your saved delivery addresses</p>
+</section>
+
+<section class="address-section">
+  <div class="success" id="successMessage"></div>
+  <div class="error" id="errorMessage"></div>
+
+  <div class="address-controls">
+    <div class="address-info" id="addressInfo">Loading your addresses...</div>
+  </div>
+
+  <div class="address-grid" id="addressGrid"></div>
+</section>
+
+<button class="add-button" onclick="openModal()" title="Add New Address">
+  <i class="fa-solid fa-plus"></i>
+</button>
+
+<div class="modal" id="addressModal">
+  <div class="modal-content">
+    <h3 id="modalTitle">Add New Address</h3>
+    <input type="text" id="full_name" placeholder="Full Name" required>
+    <input type="text" id="phone" placeholder="Phone Number" required>
+    <textarea id="full_address" placeholder="Complete Address" rows="3" required></textarea>
+    <input type="text" id="city" placeholder="City" required>
+    <input type="text" id="state" placeholder="State" required>
+    <input type="text" id="pincode" placeholder="Pincode" required>
+    <button onclick="saveAddress()">Save</button>
+    <button onclick="closeModal()" style="background:#666;margin-left:10px;">Cancel</button>
+  </div>
+</div>
+
+<footer>
+  <p>&copy; 2025 RentIT. All rights reserved.</p>
+</footer>
+
+<script>
+  const user = JSON.parse(localStorage.getItem("rentitCurrentUser"));
+  if (!user) {
+    alert("Please login first.");
+    window.location.href = "login.html";
+  }
+
+  let editingAddressId = null; 
+
+  window.onload = loadAddresses;
+
+  function showMessage(msg, type) {
+    const success = document.getElementById("successMessage");
+    const error = document.getElementById("errorMessage");
+    if (type === "success") {
+      success.textContent = msg;
+      success.style.display = "block";
+      error.style.display = "none";
+    } else {
+      error.textContent = msg;
+      error.style.display = "block";
+      success.style.display = "none";
+    }
+    setTimeout(() => {
+      success.style.display = "none";
+      error.style.display = "none";
+    }, 3000);
+  }
+
+  async function loadAddresses() {
+    try {
+      const res = await fetch(`http://localhost:3001/addresses/${user.user_id}`);
+      const data = await res.json();
+
+      const grid = document.getElementById('addressGrid');
+      const info = document.getElementById('addressInfo');
+
+      // Ensure it's an array
+      const addresses = Array.isArray(data) ? data : [];
+
+      if (addresses.length === 0) {
+        grid.innerHTML = `
+          <div class="no-address">
+            <h3>No addresses saved</h3>
+            <button onclick="openModal()">Add Address</button>
+          </div>`;
+        info.textContent = "No addresses found";
+        return;
+      }
+
+      info.textContent = `You have ${addresses.length} saved address${addresses.length > 1 ? 'es' : ''}`;
+
+      grid.innerHTML = addresses.map(a => `
+        <div class="address-card">
+          <div class="address-actions">
+            <i class="fa-solid fa-pen" onclick="editAddress(${a.address_id}, '${a.full_name}', '${a.phone}', '${a.full_address}', '${a.city}', '${a.state}', '${a.pincode}')"></i>
+            <i class="fa-solid fa-trash" onclick="deleteAddress(${a.address_id})"></i>
+          </div>
+          <h3>${a.full_name}</h3>
+          <p><strong>Phone:</strong> ${a.phone}</p>
+          <p>${a.full_address}, ${a.city}, ${a.state} - ${a.pincode}</p>
+        </div>
+      `).join('');
+    } catch (err) {
+      console.error("Error loading addresses:", err);
+      document.getElementById('addressInfo').textContent = "Failed to load addresses.";
+    }
+  }
+
+  function openModal() {
+    document.getElementById('modalTitle').innerText = "Add New Address";
+    editingAddressId = null;
+    document.getElementById('addressModal').style.display = 'flex';
+  }
+
+  function closeModal() {
+    document.getElementById('addressModal').style.display = 'none';
+  }
+
+  async function saveAddress() {
+    let obj = {
+      user_id: user.user_id,
+      full_name: full_name.value.trim(),
+      phone: phone.value.trim(),
+      full_address: full_address.value.trim(),
+      city: city.value.trim(),
+      state: state.value.trim(),
+      pincode: pincode.value.trim()
+    };
+
+    try {
+      if (editingAddressId) {
+        await fetch(`http://localhost:3001/addresses/${editingAddressId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(obj)
+        });
+        showMessage("Address updated successfully!", "success");
+      } else {
+        await fetch("http://localhost:3001/addresses", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(obj)
+        });
+        showMessage("Address added successfully!", "success");
+      }
+      closeModal();
+      loadAddresses();
+    } catch {
+      showMessage("Failed to save address.", "error");
+    }
+  }
+
+  function editAddress(id, n, ph, addr, c, st, pin) {
+    editingAddressId = id;
+    document.getElementById('modalTitle').innerText = "Edit Address";
+    full_name.value = n;
+    phone.value = ph;
+    full_address.value = addr;
+    city.value = c;
+    state.value = st;
+    pincode.value = pin;
+    openModal();
+  }
+
+  async function deleteAddress(id) {
+    if (confirm("Delete this address?")) {
+      try {
+        await fetch(`http://localhost:3001/addresses/${id}`, { method: "DELETE" });
+        showMessage("Address deleted successfully!", "success");
+        loadAddresses();
+      } catch {
+        showMessage("Failed to delete address.", "error");
+      }
+    }
+  }
+</script>
+
+</body>
+</html>

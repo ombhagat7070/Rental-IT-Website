@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account - RentIT</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f8f9fa; color: #333; overflow-x: hidden; }
+    a { text-decoration: none; }
+    header { background-color: #222; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+    header h1 { margin: 0; font-size: 1.8rem; font-weight: bold; letter-spacing: 1px; }
+    nav a { color: white; margin-left: 20px; position: relative; }
+    nav a::after { content: ''; position: absolute; width: 0; height: 2px; background: #ff6600; left: 0; bottom: -4px; transition: 0.3s; }
+    nav a:hover::after { width: 100%; }
+    .container { min-height: calc(100vh - 160px); display: grid; place-items: center; padding: 40px 20px; }
+    .card { background: white; width: 100%; max-width: 480px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); padding: 24px; animation: fadeIn 0.6s ease-out; }
+    .card h2 { margin: 0 0 6px; }
+    .subtitle { margin: 0 0 18px; color: #666; font-size: 14px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .field { margin-bottom: 14px; }
+    label { display: block; font-weight: 600; margin-bottom: 6px; }
+    input[type="text"], input[type="email"], input[type="password"], input[type="tel"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; outline: none; transition: box-shadow 0.2s, border-color 0.2s; background: #fff; }
+    input:focus { border-color: #ff6600; box-shadow: 0 0 0 3px rgba(255,102,0,0.15); }
+    .btn { width: 100%; padding: 12px 16px; background: #ff6600; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: background 0.2s ease; margin-top: 6px; }
+    .btn:hover { background: #e05500; }
+    .link { color: #ff6600; }
+    footer { background: #222; color: white; text-align: center; padding: 15px; }
+    @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+    @media (max-width: 520px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>RentIT</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="login.html">Login</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="card" aria-labelledby="signup-title">
+      <h2 id="signup-title">Create your account</h2>
+      <p class="subtitle">Join RentIT to rent electronics quickly and affordably</p>
+      <form onsubmit="handleSignup(event)">
+        <div class="grid">
+          <div class="field">
+            <label for="firstName">First name</label>
+            <input id="firstName" name="firstName" type="text" autocomplete="given-name" required>
+          </div>
+          <div class="field">
+            <label for="lastName">Last name</label>
+            <input id="lastName" name="lastName" type="text" autocomplete="family-name" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="phone">Phone (optional)</label>
+          <input id="phone" name="phone" type="tel" autocomplete="tel">
+        </div>
+        <div class="grid">
+          <div class="field">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" minlength="6" autocomplete="new-password" required>
+          </div>
+          <div class="field">
+            <label for="confirmPassword">Confirm password</label>
+            <input id="confirmPassword" name="confirmPassword" type="password" minlength="6" required>
+          </div>
+        </div>
+        <div class="field" style="font-size:14px; color:#555;">
+          By creating an account, you agree to our <a class="link" href="#">Terms</a> and <a class="link" href="#">Privacy Policy</a>.
+        </div>
+        <button class="btn" type="submit">Create account</button>
+      </form>
+      <p class="subtitle" style="margin-top:12px;">Already have an account? <a class="link" href="login.html">Log in</a></p>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 RentIT. All rights reserved.</p>
+  </footer>
+
+  <script>
+    async function handleSignup(e) {
+      e.preventDefault();
+
+      const formData = new FormData(e.target);
+      const userData = {
+        name: formData.get('firstName') + ' ' + formData.get('lastName'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+        password: formData.get('password'),
+        confirmPassword: formData.get('confirmPassword')
+      };
+
+      if (userData.password !== userData.confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+      }
+
+      try {
+        const res = await fetch('http://localhost:3001/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: userData.name,
+            email: userData.email,
+            password: userData.password,
+            phone: userData.phone
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          alert(data.message || 'Signup failed');
+          return;
+        }
+
+        alert('Account created successfully!');
+        window.location.href = 'login.html';
+
+      } catch (err) {
+        console.error(err);
+        alert('Error connecting to server. Make sure your backend is running.');
+      }
+    }
+  </script>
+
+</body>
+</html>

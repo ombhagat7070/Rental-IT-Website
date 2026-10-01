@@ -1,0 +1,42 @@
+# Node.js
+node_modules/
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
+.env
+*.env
+.env.*
+**/.env
+**/.env.*
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+**/database/*.db
+**/database/*.sqlite
+**/database/*.sqlite3
+
+# Uploads / generated files
+uploads/
+**/uploads/
+
+# VS Code
+.vscode/
+**/.vscode/
+
+# Logs
+*.log
+**/*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build output
+build/
+dist/
+coverage/

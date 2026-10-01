@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Renter Verification - RentIT</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f5f6f7;
+    }
+
+    header {
+      background: #222;
+      color: #fff;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    header nav a {
+      color: #fff;
+      margin-left: 18px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    header nav a:hover { opacity: 0.9; }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .card {
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      width: 100%;
+      max-width: 700px; /* matches your screenshot */
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      font-size: 20px;
+      font-weight: 700;
+      margin: 20px 0 15px;
+    }
+    .section-title::before {
+      content: "";
+      display: inline-block;
+      width: 5px;
+      height: 22px;
+      background: #ff6600;
+      margin-right: 8px;
+      border-radius: 2px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      font-size: 15px;
+    }
+    textarea { resize: vertical; min-height: 100px; }
+
+    .btn {
+      width: 100%;
+      background: #ff6600;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+    .btn:hover { opacity: 0.95; }
+
+    .otp-boxes {
+      display: flex;
+      gap: 10px;
+      margin: 10px 0 16px;
+    }
+    .otp-boxes input {
+      flex: 1;
+      text-align: center;
+      font-size: 18px;
+      height: 48px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 onclick="location.href='index.html'">RentIT</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <h2 class="section-title">Renter Verification</h2>
+      <form>
+        <label for="name">Full Name</label>
+        <input type="text" id="name" required>
+
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" maxlength="10" required>
+
+        <label for="address">Address</label>
+        <textarea id="address" required></textarea>
+
+        <label for="dob">Date of Birth</label>
+        <input type="date" id="dob" required>
+
+        <h3 class="section-title">Aadhaar Verification</h3>
+        <label for="aadhar">Aadhaar Number</label>
+        <input type="text" id="aadhar" maxlength="12" required>
+
+        <button type="button" class="btn">Send OTP</button>
+
+        <label>Enter OTP</label>
+        <div class="otp-boxes">
+          <input type="text" maxlength="1">
+          <input type="text" maxlength="1">
+          <input type="text" maxlength="1">
+          <input type="text" maxlength="1">
+          <input type="text" maxlength="1">
+          <input type="text" maxlength="1">
+        </div>
+        <button type="button" class="btn">Verify OTP</button>
+
+        <h3 class="section-title">Upload Documents</h3>
+        <label for="photo">Upload Photo</label>
+        <input type="file" id="photo" accept="image/*" required>
+
+        <label for="govtid">Upload Govt. ID Proof</label>
+        <input type="file" id="govtid" accept=".jpg,.jpeg,.png,.pdf" required>
+
+        <label for="signature">Upload Signature</label>
+        <input type="file" id="signature" accept="image/*,.pdf" required>
+
+        <button type="submit" class="btn">Submit Verification</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
